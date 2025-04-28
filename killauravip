@@ -1,0 +1,26 @@
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoid = character:WaitForChild("Humanoid")
+
+local radius = 200 -- Phạm vi kill aura (rộng hơn nhiều)
+
+game:GetService("RunService").Heartbeat:Connect(function()
+    for _, mob in pairs(workspace:GetChildren()) do
+        if mob:IsA("Model") and mob:FindFirstChild("Humanoid") and not game.Players:GetPlayerFromCharacter(mob) then
+            local mobHumanoid = mob.Humanoid
+            local mobRoot = mob:FindFirstChild("HumanoidRootPart")
+            local myRoot = character:FindFirstChild("HumanoidRootPart")
+            if mobRoot and myRoot then
+                local distance = (myRoot.Position - mobRoot.Position).Magnitude
+                if distance <= radius and mobHumanoid.Health > 0 then
+                    local melee = player:FindFirstChild("Melee") or player.leaderstats and player.leaderstats:FindFirstChild("Melee")
+                    if melee and melee.Value then
+                        mobHumanoid:TakeDamage(melee.Value)
+                    else
+                        mobHumanoid:TakeDamage(10)
+                    end
+                end
+            end
+        end
+    end
+end)
